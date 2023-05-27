@@ -1,0 +1,40 @@
+package com.pollingapi.jeremiahpollapi.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+//POJO- Model
+
+@Entity // Marks a class to be used in a database
+public class Option {
+    @Id // Used to identify
+    @GeneratedValue  // Generate numbers when i add things
+    @Column(name="OPTION_ID") // Store it in a column
+    private long id;
+    @Column(name="OPTION_VALUE")
+    private String value;
+
+
+    public Option(long id, String value) {
+        this.id = id;
+        this.value = value;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+}
