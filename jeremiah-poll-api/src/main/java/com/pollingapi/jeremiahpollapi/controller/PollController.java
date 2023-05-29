@@ -19,13 +19,15 @@ public class PollController {
     private PollService pollService;
 
     @GetMapping("/polls")
-    public Iterable<Poll> getAllPolls(){
-        return pollService.getStudents();
+//    public Iterable<Poll> getAllPolls(){
+//        return pollService.getStudents();
+//    }
+
+    public ResponseEntity<Iterable<Poll>> getAllPolls() {
+        Iterable<Poll> allPolls = pollRepository.findAll();
+        return new ResponseEntity<>(pollRepository.findAll(), HttpStatus.OK);
     }
 
-//    public ResponseEntity<Iterable<Poll>> getAllPolls(){
-//        Iterable<Poll> allPolls = pollRepository.findAll();
-//        return new ResponseEntity<>(pollRepository.findAll(), HttpStatus.OK);
 
     @PostMapping("/polls")
     public ResponseEntity<?> createPoll(@RequestBody Poll poll){
