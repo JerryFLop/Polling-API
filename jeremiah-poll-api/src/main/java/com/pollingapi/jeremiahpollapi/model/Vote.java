@@ -8,7 +8,7 @@ public class Vote {
  @GeneratedValue
  @Column(name="VOTE_ID")
     private long id;
- @ManyToOne
+ @ManyToOne// uses a foreign key
  @JoinColumn(name="OPTION_ID")
     private Option option;
 
