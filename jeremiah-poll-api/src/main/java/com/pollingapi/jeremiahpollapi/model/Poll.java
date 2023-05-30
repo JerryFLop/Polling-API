@@ -5,6 +5,8 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.NotFound;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Set;
 @Entity
 public class Poll {
@@ -13,21 +15,17 @@ public class Poll {
     @Column(name="POLL_ID") // Store it in a column.
     private Long id;
     @Column(name="QUESTION")
-    @NotNull
+    @NotEmpty
     private String question;
       @OneToMany(cascade = CascadeType.ALL)  //Any changes will  apply to Option object
       @JoinColumn(name="POLL_ID") // connects column with the same name
       @OrderBy // Organize in a certain order
+      @Size(min=2, max = 6)
       private Set<Option> options;
 
       public Poll() {
       }
 
-//    public Poll(Long id, String question, Set<Option> options) {
-//        this.id = id;
-//        this.question = question;
-//        this.options = options;
-//    }
 
     public Long getId() {
         return id;
