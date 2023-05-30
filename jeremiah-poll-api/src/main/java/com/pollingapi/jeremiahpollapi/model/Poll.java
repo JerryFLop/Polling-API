@@ -1,5 +1,9 @@
 package com.pollingapi.jeremiahpollapi.model;
 
+import com.sun.istack.NotNull;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.NotFound;
+
 import javax.persistence.*;
 import java.util.Set;
 @Entity
@@ -7,8 +11,9 @@ public class Poll {
     @Id // Used to identify
     @GeneratedValue  // Generate numbers when I put new things.
     @Column(name="POLL_ID") // Store it in a column.
-    private long id;
+    private Long id;
     @Column(name="QUESTION")
+    @NotNull
     private String question;
       @OneToMany(cascade = CascadeType.ALL)  //Any changes will  apply to Option object
       @JoinColumn(name="POLL_ID") // connects column with the same name
@@ -18,17 +23,17 @@ public class Poll {
       public Poll() {
       }
 
-    public Poll(long id, String question, Set<Option> options) {
-        this.id = id;
-        this.question = question;
-        this.options = options;
-    }
+//    public Poll(Long id, String question, Set<Option> options) {
+//        this.id = id;
+//        this.question = question;
+//        this.options = options;
+//    }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,5 +51,14 @@ public class Poll {
 
     public void setOptions(Set<Option> options) {
         this.options = options;
+    }
+
+    @Override
+    public String toString() {
+        return "Poll{" +
+                "id=" + id +
+                ", question='" + question + '\'' +
+                ", options=" + options +
+                '}';
     }
 }

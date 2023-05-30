@@ -11,21 +11,21 @@ public class Option {
     @Id // Used to identify
     @GeneratedValue  // Generate numbers when i add things
     @Column(name="OPTION_ID") // Store it in a column
-    private long id;
+    private Long id;
     @Column(name="OPTION_VALUE")
     private String value;
 
 
-    public Option(long id, String value) {
-        this.id = id;
-        this.value = value;
-    }
+//    public Option(Long id, String value) {
+//        this.id = id;
+//        this.value = value;
+//    }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -37,4 +37,12 @@ public class Option {
         this.value = value;
     }
 
+
+    @Override
+    public String toString() {
+        return "Option{" +
+                "id=" + id +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

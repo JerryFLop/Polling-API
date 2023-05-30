@@ -7,7 +7,7 @@ public class Vote {
  @Id
  @GeneratedValue
  @Column(name="VOTE_ID")
-    private long id;
+    private Long id;
  @ManyToOne// uses a foreign key
  @JoinColumn(name="OPTION_ID")
     private Option option;
@@ -15,17 +15,17 @@ public class Vote {
     public Vote() {
     }
 
-    public Vote(long id, Option option) {
-        this.id = id;
-        this.option = option;
-    }
+//    public Vote(Long id, Option option) {
+//        this.id = id;
+//        this.option = option;
+//    }
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -35,5 +35,13 @@ public class Vote {
 
     public void setOption(Option option) {
         this.option = option;
+    }
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "id=" + id +
+                ", option=" + option +
+                '}';
     }
 }
