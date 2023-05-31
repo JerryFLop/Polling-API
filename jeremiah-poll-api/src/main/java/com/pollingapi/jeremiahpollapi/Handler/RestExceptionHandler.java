@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 import com.pollingapi.jeremiahpollapi.dto.error.ErrorDetail;
 import com.pollingapi.jeremiahpollapi.dto.error.ValidationError;
 import com.pollingapi.jeremiahpollapi.exception.ResourceNotFoundException;
@@ -43,6 +44,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler  {
         return new ResponseEntity<>(errorDetail, null, HttpStatus.NOT_FOUND);
     }
 
+
+
+
+
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException manve, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
@@ -73,18 +78,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler  {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(
-            HttpMessageNotReadableException ex, HttpHeaders headers,
-            HttpStatus status, WebRequest request) {
-
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException httpMessageNotReadableException, HttpHeaders headers, HttpStatus status, WebRequest request){
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(status.value());
-        errorDetail.setTitle("Message Not Readable");
-        errorDetail.setDetail(ex.getMessage());
-        errorDetail.setDeveloperMessage(ex.getClass().getName());
+        errorDetail.setTitle("Message Not readable");
+        errorDetail.setDetail(httpMessageNotReadableException.getMessage());
+        errorDetail.setDeveloperMessage(httpMessageNotReadableException.getClass().getName());
 
-        return handleExceptionInternal(ex, errorDetail, headers, status, request);
+        return(super.handleExceptionInternal(httpMessageNotReadableException,errorDetail,headers,status,request));
     }
-
 }
