@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 
 
+import com.pollingapi.jeremiahpollapi.exception.ResourceNotFoundException;
 import com.pollingapi.jeremiahpollapi.model.Poll;
 import com.pollingapi.jeremiahpollapi.repository.PollRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,21 +46,29 @@ public class PollController {
 
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.GET)
     public ResponseEntity<?> getPoll(@PathVariable Long pollId) {
-       Optional<Poll> p = pollRepository.findById(pollId);
-        return new ResponseEntity<> (p, HttpStatus.OK);
+        verifyPoll(pollId);
+       Poll p = pollRepository.findById(pollId).get();
+       return new ResponseEntity<> (p, HttpStatus.OK);
     }
 
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.PUT)
     public ResponseEntity<?> updatePoll(@RequestBody Poll poll, @PathVariable Long pollId) {
         // Save the entity
+verifyPoll(pollId);
         Poll p = pollRepository.save(poll);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.DELETE)
     public ResponseEntity<?> deletePoll(@PathVariable Long pollId) {
+verifyPoll(pollId);
         pollRepository.deleteById(pollId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    protected void verifyPoll(Long pollId) throws ResourceNotFoundException{
+        if(!(this.pollRepository.existsById(pollId))){
+            throw new ResourceNotFoundException("Poll with id" + pollId + " not found");
+        }
     }
 
 }
