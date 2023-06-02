@@ -17,3 +17,4 @@ public class ValidationError {
         this.message = message;
     }
 }
+

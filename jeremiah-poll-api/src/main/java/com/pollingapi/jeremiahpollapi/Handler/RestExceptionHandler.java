@@ -30,10 +30,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler  {
 
     @Autowired
     private MessageSource messageSource;
-
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException rnfe, HttpServletRequest request) {
-
+    public ResponseEntity<?> handlerResourceNotFoundException(ResourceNotFoundException rnfe, HttpServletRequest request) {
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(HttpStatus.NOT_FOUND.value());
@@ -44,48 +42,44 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler  {
         return new ResponseEntity<>(errorDetail, null, HttpStatus.NOT_FOUND);
     }
 
-
-
-
-
     @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException manve, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException methodArgumentNotValidException, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail();
-        // Populate errorDetail instance
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(HttpStatus.BAD_REQUEST.value());
         errorDetail.setTitle("Validation Failed");
-        errorDetail.setDetail("Input validation failed");
-        errorDetail.setDeveloperMessage(manve.getClass().getName());
+        errorDetail.setDetail(methodArgumentNotValidException.getMessage());
+        errorDetail.setDeveloperMessage(methodArgumentNotValidException.getClass().getName());
 
-        // Create ValidationError instances
-        List<FieldError> fieldErrors =  manve.getBindingResult().getFieldErrors();
-        for(FieldError fe : fieldErrors) {
-
-            List<ValidationError> validationErrorList = errorDetail.getErrors().get(fe.getField());
-            if(validationErrorList == null) {
-                validationErrorList = new ArrayList<ValidationError>();
-                errorDetail.getErrors().put(fe.getField(), validationErrorList);
+        List<FieldError> fieldErrors = methodArgumentNotValidException.getBindingResult().getFieldErrors();
+        for (FieldError fieldError : fieldErrors) {
+            List<ValidationError> validationErrors = errorDetail.getErrors().get(fieldError.getField());
+            if (validationErrors == null) {
+                validationErrors = new ArrayList<>();
+                errorDetail.getErrors().put(fieldError.getField(), validationErrors);
             }
             ValidationError validationError = new ValidationError();
-            validationError.setCode(fe.getCode());
-            validationError.setMessage(messageSource.getMessage(fe, null));
-            validationErrorList.add(validationError);
+            validationError.setCode(fieldError.getCode());
+            validationError.setMessage(messageSource.getMessage(fieldError, null));
+            validationErrors.add(validationError);
         }
 
-        return handleExceptionInternal(manve, errorDetail, headers, status, request);
+        return (super.handleExceptionInternal(methodArgumentNotValidException, errorDetail, headers, status, request));
     }
-
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException httpMessageNotReadableException, HttpHeaders headers, HttpStatus status, WebRequest request){
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpHeaders headers,
+            HttpStatus status, WebRequest request) {
+
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(status.value());
-        errorDetail.setTitle("Message Not readable");
-        errorDetail.setDetail(httpMessageNotReadableException.getMessage());
-        errorDetail.setDeveloperMessage(httpMessageNotReadableException.getClass().getName());
+        errorDetail.setTitle("Message Not Readable");
+        errorDetail.setDetail(ex.getMessage());
+        errorDetail.setDeveloperMessage(ex.getClass().getName());
 
-        return(super.handleExceptionInternal(httpMessageNotReadableException,errorDetail,headers,status,request));
+        return handleExceptionInternal(ex, errorDetail, headers, status, request);
     }
+
+
 }

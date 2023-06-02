@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.pollingapi.jeremiahpollapi.exception.ResourceNotFoundException;
 import com.pollingapi.jeremiahpollapi.model.Poll;
 import com.pollingapi.jeremiahpollapi.repository.PollRepository;
+import com.pollingapi.jeremiahpollapi.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,13 +20,12 @@ import javax.validation.Valid;
 
 @RestController
 public class PollController {
-
     @Autowired
-    private PollRepository pollRepository;
+    private PollService pollService;
 
-   @PostMapping("/polls")
+    @PostMapping("/polls")
     public ResponseEntity<?> createPoll(@Valid @RequestBody Poll poll) {
-        poll = pollRepository.save(poll);
+        pollService.createPoll(poll);
 
         // Set the location header for the newly created resource
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -35,43 +35,34 @@ public class PollController {
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value="/polls", method=RequestMethod.GET)
+    @RequestMapping(value="/polls", method= RequestMethod.GET)
     public ResponseEntity<Iterable<Poll>> getAllPolls() {
-        Iterable<Poll> allPolls = pollRepository.findAll();
+        Iterable<Poll> allPolls = pollService.getAllPolls();
         return new ResponseEntity<>(allPolls, HttpStatus.OK);
     }
 
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.GET)
     public ResponseEntity<?> getPoll(@PathVariable Long pollId) {
-        verifyPoll(pollId);
-       Poll p = pollRepository.findById(pollId).get();
-       return new ResponseEntity<>(p, HttpStatus.OK);
+        Poll p = pollService.getPoll(pollId);
+        return new ResponseEntity<>(p, HttpStatus.OK);
     }
 
     @PutMapping("/polls/{pollId}")
-    public ResponseEntity<?> updatePoll(@RequestBody Poll poll, @PathVariable Long pollId) {
+    public ResponseEntity<?> updatePoll( @PathVariable Long pollId , @RequestBody Poll poll ) {
         // Save the entity
-    verifyPoll(pollId);
-    Poll pollToBeUpdate = this.pollRepository.findById(pollId).get();
-    pollToBeUpdate.setQuestion(poll.getQuestion());
-    pollToBeUpdate.setOptions(pollToBeUpdate.getOptions());
-    this.pollRepository.save(pollToBeUpdate);
+        pollService.updatePoll(pollId,poll);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value="/polls/{pollId}", method=RequestMethod.DELETE)
     public ResponseEntity<?> deletePoll(@PathVariable Long pollId) {
-    verifyPoll(pollId);
-        pollRepository.deleteById(pollId);
+        pollService.delete(pollId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    protected void verifyPoll(Long pollId) throws ResourceNotFoundException {
-        if (!(this.pollRepository.existsById(pollId))) {
-            throw new ResourceNotFoundException("Poll with id " + pollId + " not found");
-        }
-    }
+
 }
+
 
 
 

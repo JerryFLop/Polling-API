@@ -20,3 +20,4 @@ public class VoteResult {
         this.results = results;
     }
 }
+

@@ -11,10 +11,7 @@ import com.pollingapi.jeremiahpollapi.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ComputeResultController {
@@ -23,30 +20,28 @@ public class ComputeResultController {
     private VoteRepository voteRepository;
 
 
-    @RequestMapping(value="/computeresult", method=RequestMethod.GET)
+    @GetMapping("/computeresult")
     public ResponseEntity<?> computeResult(@RequestParam Long pollId) {
         VoteResult voteResult = new VoteResult();
-        Iterable<Vote> allVotes = voteRepository.findByPoll(pollId);
+        Iterable<Vote> allVotes = this.voteRepository.findByPoll(pollId);
 
-        // Algorithm to count votes
         int totalVotes = 0;
-        Map<Long, OptionCount> tempMap = new HashMap<Long, OptionCount>();
-        for(Vote v : allVotes) {
-            totalVotes ++;
-            // Get the OptionCount corresponding to this Option
-            OptionCount optionCount = tempMap.get(v.getOption().getId());
-            if(optionCount == null) {
+        Map<Long, OptionCount> results = new HashMap<>();
+        for (Vote vote : allVotes) {
+            totalVotes++;
+            OptionCount optionCount = results.get(vote.getOption().getId());
+            if (optionCount == null) {
                 optionCount = new OptionCount();
-                optionCount.setOptionId(v.getOption().getId());
-                tempMap.put(v.getOption().getId(), optionCount);
+                optionCount.setOptionId(vote.getOption().getId());
+                results.put(vote.getOption().getId(), optionCount);
             }
-            optionCount.setCount(optionCount.getCount()+1);
+            optionCount.setCount(optionCount.getCount() + 1);
         }
 
         voteResult.setTotalVotes(totalVotes);
-        voteResult.setResults(tempMap.values());
+        voteResult.setResults(results.values());
 
-        return new ResponseEntity<VoteResult>(voteResult, HttpStatus.OK);
+        return (new ResponseEntity<VoteResult>(voteResult, HttpStatus.OK));
     }
 
 }
