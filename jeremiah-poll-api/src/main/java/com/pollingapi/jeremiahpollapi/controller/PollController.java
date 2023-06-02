@@ -21,6 +21,8 @@ import javax.validation.Valid;
 @RestController
 public class PollController {
     @Autowired
+    private PollRepository pollRepository;
+    @Autowired
     private PollService pollService;
 
     @PostMapping("/polls")
